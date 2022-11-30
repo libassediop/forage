@@ -24,3 +24,5 @@ info:
   application:
     name: forage-db
     version: '@project.version@'
+
+
