@@ -2,6 +2,7 @@ package sn.isi.service;
 
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sn.isi.dao.ICompteurRepository;
 import sn.isi.dto.Compteur;
@@ -14,27 +15,28 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Service
 public class CompteurService {
     private ICompteurRepository iCompteurRepository;
-    private CompteurMapper CompteurMapper;
+    private CompteurMapper compteurMapper;
     MessageSource messageSource;
 
-    public CompteurService(ICompteurRepository iCompteurRepository, CompteurMapper CompteurMapper, MessageSource messageSource) {
+    public CompteurService(ICompteurRepository iCompteurRepository, CompteurMapper compteurMapper, MessageSource messageSource) {
         this.iCompteurRepository = iCompteurRepository;
-        this.CompteurMapper = CompteurMapper;
+        this.compteurMapper = compteurMapper;
         this.messageSource = messageSource;
     }
 
     @Transactional(readOnly = true)
     public List<Compteur> getCompteurs() {
         return StreamSupport.stream(iCompteurRepository.findAll().spliterator(), false)
-                .map(CompteurMapper::toCompteur)
+                .map(compteurMapper::toCompteur)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public Compteur getCompteur(int id) {
-        return CompteurMapper.toCompteur(iCompteurRepository.findById(id)
+        return compteurMapper.toCompteur(iCompteurRepository.findById(id)
                 .orElseThrow(() ->
                         new EntityNotFoundException(messageSource.getMessage("Compteur.notfound", new Object[]{id},
                                 Locale.getDefault()))));
@@ -42,16 +44,16 @@ public class CompteurService {
 
     @Transactional
     public Compteur createCompteur(Compteur Compteur) {
-        return CompteurMapper.toCompteur(iCompteurRepository.save(CompteurMapper.fromCompteur(Compteur)));
+        return compteurMapper.toCompteur(iCompteurRepository.save(compteurMapper.fromCompteur(Compteur)));
     }
 
     @Transactional
-    public Compteur updateCompteur(int id, Compteur Compteur) {
+    public Compteur updateCompteur(int id, Compteur compteur) {
         return iCompteurRepository.findById(id)
                 .map(entity -> {
-                    Compteur.setId(id);
-                    return CompteurMapper.toCompteur(
-                            iCompteurRepository.save(CompteurMapper.fromCompteur(Compteur)));
+                    compteur.setId(id);
+                    return compteurMapper.toCompteur(
+                            iCompteurRepository.save(compteurMapper.fromCompteur(compteur)));
                 }).orElseThrow(() -> new EntityNotFoundException(messageSource.getMessage("Compteur.notfound", new Object[]{id},
                         Locale.getDefault())));
     }

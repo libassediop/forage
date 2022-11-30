@@ -2,6 +2,7 @@ package sn.isi.service;
 
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sn.isi.dao.IVillageRepository;
 import sn.isi.dto.Village;
@@ -14,6 +15,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Service
 public class VillageService {
     private IVillageRepository iVillageRepository;
     private VillageMapper villageMapper;

@@ -2,6 +2,7 @@ package sn.isi.service;
 
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sn.isi.dao.IChefDeVillageRepository;
 import sn.isi.dto.ChefDeVillage;
@@ -14,27 +15,28 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Service
 public class ChefDeVillageService {
     private IChefDeVillageRepository iChefDeVillageRepository;
-    private ChefDeVillageMapper ChefDeVillageMapper;
+    private ChefDeVillageMapper chefDeVillageMapper;
     MessageSource messageSource;
 
-    public ChefDeVillageService(IChefDeVillageRepository iChefDeVillageRepository, ChefDeVillageMapper ChefDeVillageMapper, MessageSource messageSource) {
+    public ChefDeVillageService(IChefDeVillageRepository iChefDeVillageRepository, ChefDeVillageMapper chefDeVillageMapper, MessageSource messageSource) {
         this.iChefDeVillageRepository = iChefDeVillageRepository;
-        this.ChefDeVillageMapper = ChefDeVillageMapper;
+        this.chefDeVillageMapper = chefDeVillageMapper;
         this.messageSource = messageSource;
     }
 
     @Transactional(readOnly = true)
     public List<ChefDeVillage> getChefDeVillages() {
         return StreamSupport.stream(iChefDeVillageRepository.findAll().spliterator(), false)
-                .map(ChefDeVillageMapper::toChefDeVillage)
+                .map(chefDeVillageMapper::toChefDeVillage)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public ChefDeVillage getChefDeVillage(int id) {
-        return ChefDeVillageMapper.toChefDeVillage(iChefDeVillageRepository.findById(id)
+        return chefDeVillageMapper.toChefDeVillage(iChefDeVillageRepository.findById(id)
                 .orElseThrow(() ->
                         new EntityNotFoundException(messageSource.getMessage("ChefDeVillage.notfound", new Object[]{id},
                                 Locale.getDefault()))));
@@ -42,16 +44,16 @@ public class ChefDeVillageService {
 
     @Transactional
     public ChefDeVillage createChefDeVillage(ChefDeVillage ChefDeVillage) {
-        return ChefDeVillageMapper.toChefDeVillage(iChefDeVillageRepository.save(ChefDeVillageMapper.fromChefDeVillage(ChefDeVillage)));
+        return chefDeVillageMapper.toChefDeVillage(iChefDeVillageRepository.save(chefDeVillageMapper.fromChefDeVillage(ChefDeVillage)));
     }
 
     @Transactional
-    public ChefDeVillage updateChefDeVillage(int id, ChefDeVillage ChefDeVillage) {
+    public ChefDeVillage updateChefDeVillage(int id, ChefDeVillage chefDeVillage) {
         return iChefDeVillageRepository.findById(id)
                 .map(entity -> {
-                    ChefDeVillage.setId(id);
-                    return ChefDeVillageMapper.toChefDeVillage(
-                            iChefDeVillageRepository.save(ChefDeVillageMapper.fromChefDeVillage(ChefDeVillage)));
+                    chefDeVillage.setId(id);
+                    return chefDeVillageMapper.toChefDeVillage(
+                            iChefDeVillageRepository.save(chefDeVillageMapper.fromChefDeVillage(chefDeVillage)));
                 }).orElseThrow(() -> new EntityNotFoundException(messageSource.getMessage("ChefDeVillage.notfound", new Object[]{id},
                         Locale.getDefault())));
     }
